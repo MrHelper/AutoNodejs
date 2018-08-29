@@ -4,6 +4,8 @@ var Datastore = require('nedb'),
 		autoload: true
 	});
 
+const hisrow = 20;
+
 function GetApiKey() {
 	db.find({
 		type: 'api'
@@ -89,7 +91,6 @@ function SetAuto(sym) {
 			}, {}, function (err, numReplaced) {});
 		}
 	});
-	console.log(sym);
 }
 
 function GetAuto() {
@@ -101,18 +102,45 @@ function GetAuto() {
 	});
 }
 
-function SetHistory(data) {
-	db.insert({
-		type: 'his',
-		his: data,
-		amo: amount
-	}, function (err, newDocs) {});
+function SetHistory(ordId, data) {
+	db.count({ type: 'his' }, function (err, count) {
+		if(count>=hisrow){
+			db.find({
+				type: 'his'
+			}).sort({
+				time: 1
+			}).limit(1).exec(function (err, docs) {
+				db.remove({ _id: docs[0]._id }, {}, function (err, numRemoved) {
+					db.insert({
+						type: 'his',
+						orderId: ordId,
+						his: data,
+						time: (new Date).getTime()
+					}, function (err, newDocs) {
+						GetHistory()
+					});
+				});
+			});
+		}else{
+			db.insert({
+				type: 'his',
+				orderId: ordId,
+				his: data,
+				time: (new Date).getTime()
+			}, function (err, newDocs) {
+				GetHistory()
+			});
+		}
+	});
+	
 }
 
 function GetHistory() {
 	db.find({
 		type: 'his'
-	}, function (err, docs) {
-		console.log(docs);
+	}).sort({
+		time: -1
+	}).limit(hisrow).exec(function (err, docs) {
+		LoadHis(docs);
 	});
 }

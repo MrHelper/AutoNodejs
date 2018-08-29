@@ -14,10 +14,12 @@ window["CoinChart"] = echarts.init(dom);
 var datapoint = [];
 
 // ----------------------- INTERVAL
+
 setInterval(function () {
 	GetSignalData();
 	GetBuySellAll();
 	GetBalances();
+	CheckSignal();
 }, 20000);
 
 // ----------------------- ON READY
@@ -32,16 +34,18 @@ $(document).ready(function () {
 	GetApiKey();
 	GetFav();
 	GetBuySellAll();
-
+	GetHistory();
 	// ----------------------- ELEMENT EVENT 
 	$('.sidebar').on('click', '.menu-symbol', function () {
-    $('#chart-loading').removeClass('hidden');
+		$('#chart-loading').removeClass('hidden');
 		$('.menu-symbol').removeClass('active');
 		$(this).addClass('active');
+		$('#order-amount').val('');
+		$('#order-price').val('');
+		$('#total-price').val('');
 		ConnectChart($(this).attr('alt'), $(this).attr('mast'));
 		GetSignalData();
 		GetBuySellAll();
-
 	});
 
 	$('#btn-auto-save').on('click', function () {
@@ -67,39 +71,57 @@ $(document).ready(function () {
 		let alt = $('.menu-symbol.active').attr('alt');
 		UpdateFav(mast, alt);
 	});
-		
-	$('#btn-refesh-balance').on('click',function(){
-			GetBalances();
+
+	$('#btn-refesh-balance').on('click', function () {
+		GetBalances();
 	});
-		
-  $('.btn-percent').on('click',function(){
-    let symb = $('#symbol-name').text();
-    let percent = $(this).attr('val'); 
-    let side = "";
-    if($('#order-sell').prop('checked') == false)
-      side = "buy";
-    else
-      side = "sell";
-    if(symb != ""){
-      let amount = CalcPercentAmount(symb,percent,side);
-      let price = $('#symbol-price').text();
-      $('#order-amount').val(amount);
-      $('#order-price').val(price);
-      $('#total-price').val(amount*price);
-    }
-  });
-  
-  $('#order-amount').on('change',function(){
-    let symb = $('#symbol-name').text();
-    if(symb!=""){
-      let price = $('#symbol-price').text();
-      let amount = $(this).val();
-      let stepAmount = CalcAmount(symb,amount,price);
-      $(this).val(stepAmount);
-      $('#order-price').val(price);
-      $('#total-price').val(stepAmount*price);
-    }
-  });
+
+	$('.btn-percent').on('click', function () {
+		let symb = $('#symbol-name').text();
+		let percent = $(this).attr('val');
+		let side = "";
+		if ($('#order-sell').prop('checked') == false)
+			side = "buy";
+		else
+			side = "sell";
+		if (symb != "") {
+			let amount = CalcPercentAmount(symb, percent, side);
+			let price = $('#symbol-price').text();
+			$('#order-amount').val(amount);
+			$('#order-price').val(price);
+			$('#total-price').val(amount * price);
+		}
+	});
+
+	$('#order-amount').on('change', function () {
+		let symb = $('#symbol-name').text();
+		if (symb != "") {
+			let price = $('#symbol-price').text();
+			let amount = $(this).val();
+			let stepAmount = CalcAmount(symb, amount, price);
+			$(this).val(stepAmount);
+			$('#order-price').val(price);
+			$('#total-price').val(stepAmount * price);
+		}
+	});
+	
+	$('#btn-place-order').on('click',function(){
+		let amount = $('#order-amount').val();
+		let price = $('#order-price').val();
+		let symb = $('#symbol-name').text();
+		let side = "buy";
+		let mast = symb.substring(symb.length-3,symb.length);
+		let maxTT = $('#Amount-'+mast).text();
+		if($('#order-sell').prop('checked')==true){
+			side = "sell";
+		}
+		amount = CalcAmount(symb,amount,price);
+		if((price * amount) > maxTT){
+			return ;
+		}else{
+			PlaceLimitOrder(symb,amount,price,side);	
+		}
+	});
 });
 
 // ----------------------- FUNCTION 
@@ -144,29 +166,34 @@ function CreateMenu() {
 }
 
 function GetBuySellAll() {
-	$.ajax({
-		url: 'https://signal3.exacoin.co/ai_all_signal?time=5m',
-		type: 'GET',
-		processData: false,
-		contentType: false,
-		cache: false,
-		dataType: 'JSON',
-		success: function (data) {
-			$('.item-symbol span').removeClass('bg-red');
-			$('.item-symbol span').removeClass('bg-gray');
-			$('.item-symbol span').text("");
-			for (let i = 0; i < data.buy.length; i++) {
-				let coin = data.buy[i].currency.toUpperCase();
-				$('.' + coin + ' a span').text(data.buy[i].signal);
-				$('.' + coin + ' a span').addClass('bg-gray');
+	try{
+		request({
+			uri: `https://signal3.exacoin.co/ai_all_signal?time=5m`,
+			method: 'GET'
+		}, function (err, res, body) {
+			if (err) {
+				console.log(err);
+			} 
+			else {
+				try{
+					let data = JSON.parse(body);
+					$('.item-symbol span').removeClass('bg-red');
+					$('.item-symbol span').removeClass('bg-gray');
+					$('.item-symbol span').text("");
+					for (let i = 0; i < data.buy.length; i++) {
+						let coin = data.buy[i].currency.toUpperCase();
+						$('.' + coin + ' a span').text(data.buy[i].signal);
+						$('.' + coin + ' a span').addClass('bg-gray');
+					}
+					for (let i = 0; i < data.sell.length; i++) {
+						let coin = data.sell[i].currency.toUpperCase();
+						$('.' + coin + ' a span').text(data.sell[i].signal);
+						$('.' + coin + ' a span').addClass('bg-red');
+					}
+				}catch(e){}
 			}
-			for (let i = 0; i < data.sell.length; i++) {
-				let coin = data.sell[i].currency.toUpperCase();
-				$('.' + coin + ' a span').text(data.sell[i].signal);
-				$('.' + coin + ' a span').addClass('bg-red');
-			}
-		}
-	});
+		});
+	} catch (e) {}
 }
 
 function GetSignalData() {
@@ -191,8 +218,9 @@ function GetSignalData() {
 			}, function (err, res, body) {
 				if (err) {
 					console.log(err);
+				} else {
+					UpdateSignalPoint(JSON.parse(body));
 				}
-				UpdateSignalPoint(JSON.parse(body));
 			});
 		} catch (e) {}
 	}
@@ -206,10 +234,11 @@ function UpdateSignalPoint(signalData) {
 		var CoinSell = jsonData.mark_sell;
 		var Year = (new Date()).getFullYear();
 		for (var i = 0; i < CoinSell.length; i++) {
+			let sigTime = moment(Year + "/" + CoinSell[i].date, ['YYYY/MM/DD HH:mm:ss']).add(7, 'hours').format('MM/DD HH:mm:ss');
 			dataPoint.push({
 				name: 'S',
 				coord: [
-	        moment(Year + "/" + CoinSell[i].date,['YYYY/MM/DD HH:mm:ss']).add(7, 'hours').format('MM/DD HH:mm:ss'),
+	        sigTime,
 	        CoinSell[i].value
 	      ],
 				value: CoinSell[i].value,
@@ -225,10 +254,11 @@ function UpdateSignalPoint(signalData) {
 			});
 		}
 		for (var i = 0; i < CoinBuy.length; i++) {
+			let sigTime = moment(Year + "/" + CoinBuy[i].date, ["YYYY/MM/DD HH:mm:ss"]).add(7, 'hours').format('MM/DD HH:mm:ss');
 			dataPoint.push({
 				name: 'B',
 				coord: [
-	        moment(Year + "/" + CoinBuy[i].date,["YYYY/MM/DD HH:mm:ss"]).add(7, 'hours').format('MM/DD hh:mm:ss'),
+	        sigTime,
 	        CoinBuy[i].value
 	      ],
 				value: CoinBuy[i].value,
@@ -300,9 +330,9 @@ function UpdateFav(mast, alt) {
 	SetFav(fav.toString());
 }
 
-function AddFavRow(data){
+function AddFavRow(data) {
 	let favRow = data.split(',');
-	for(var i = 0 ; i < favRow.length; i++){
+	for (var i = 0; i < favRow.length; i++) {
 		let symb = favRow[i].split('-');
 		let frow = `<li class="menu-symbol ${symb[0]}${symb[1]}" mast="${symb[1]}" alt="${symb[0]}">`;
 		frow += '<a href="#" class="item-symbol">';
@@ -312,7 +342,66 @@ function AddFavRow(data){
 	}
 }
 
+function LoadHis(data) {
+	$('#tbl-history tbody').html("");
+	for (let i = 0; i < data.length; i++) {
+		let row = "";
+		row += `<tr>`;
+		row += `<td>`;
+		row += `<p class="his-info text-red text-bold">${data[i].his[1]} - ${data[i].orderId}</p>`;
+		row += `<p class="his-info text-muted">${FormatTime(data[i].his[0])}</p>`;
+		row += `</td>`;
+		row += `<td><p class="his-info">${data[i].his[2].toLowerCase()}</p></td>`;
+		row += `<td>`;
+		row += `<p class="his-info">${data[i].his[3].toLowerCase()} </p>`;
+		row += `<p class="his-info">${data[i].his[4].toLowerCase()} </p>`;
+		row += `</td>`;
+		row += `<td><p class="his-info">${data[i].his[5]}</p>`;
+		row += `<p class="his-info">${data[i].his[6]}</p>`;
+		row += `</td>`;
+		row += `</tr>`;
+		$('#tbl-history tbody').append(row);
+	}
+}
 
+function CalcAutoSignal(symb) {
+	try {
+		var currentsymbol = symb;
+		mast = currentsymbol.substr(currentsymbol.length - 3, currentsymbol.length);
+		alt = currentsymbol.substr(0, currentsymbol.length - 3);
+		request({
+			headers: {
+				"path": `get_signal?currency=${alt}-${mast}&market=binance`,
+				"origin": "https://exacoin.co",
+				"accept-language": "en-US,en;q=0.9,vi;q=0.8",
+				"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+				"accept": "*/*",
+				"referer": "https://exacoin.co/dashboard/ai-signal",
+				"authority": "signal3.exacoin.co",
+				"scheme": "https"
+			},
+			uri: `https://signal3.exacoin.co/get_signal?currency=${alt}-${mast}&market=binance`,
+			method: 'GET'
+		}, function (err, res, body) {
+			if (err) {
+				console.log(err);
+			} 
+			else {
+				try{
+					let data = JSON.parse(JSON.parse(body).result);
+					let symb = JSON.parse(body).currency.replace('-', "").toUpperCase();
+					CalcNotifySignal(symb, data);	
+				}catch(e){}
+			}
+		});
+	} catch (e) {}
+}
+
+function CheckSignal(){
+	$('.auto-coin').each(function(){
+		CalcAutoSignal($(this).attr('symbol').replace('-',""));
+	});
+}
 
 // ----------------------- SMALL FUNCTION
 
@@ -434,20 +523,33 @@ function UpdateDataChart(xData, sData) {
 			data: sData
     }]
 	});
-  $('#chart-loading').addClass('hidden');
+	$('#chart-loading').addClass('hidden');
 }
 
-function CalcPercentAmount(symb,percent,side){
-  let mast = symb.substring(symb.length-3,symb.length);
-  let alt = symb.substring(0,symb.length-3);
-  let price = $('#symbol-price').text();
-  let amountper=0;
-  if(side=="buy"){
-    let avail = parseFloat($('#Amount-'+mast).text()) - parseFloat($('#Amount-Lock-'+mast).text());
-    amountper = ( avail * percent / 100 )/ price;
-  }else{
-    let avail = parseFloat($('#Amount-'+alt).text()) - parseFloat($('#Amount-Lock-'+alt).text());
-    amountper = avail * percent / 100;
-  }
-  return CalcAmount(symb,amountper,price);
+function CalcPercentAmount(symb, percent, side) {
+	let mast = symb.substring(symb.length - 3, symb.length);
+	let alt = symb.substring(0, symb.length - 3);
+	let price = $('#symbol-price').text();
+	let amountper = 0;
+	if (side == "buy") {
+		let avail = parseFloat($('#Amount-' + mast).text()) - parseFloat($('#Amount-Lock-' + mast).text());
+		amountper = (avail * percent / 100) / price;
+	} else {
+		let avail = parseFloat($('#Amount-' + alt).text()) - parseFloat($('#Amount-Lock-' + alt).text());
+		amountper = avail * percent / 100;
+	}
+	return CalcAmount(symb, amountper, price);
+}
+
+function CalcNotifySignal(symb, data) {
+	if (data.notify.length != 0) {
+		let ntf = data.notify[0];
+		let jump = data.mark_jump;
+		console.log(ntf.signal + " " + symb);
+		if (ntf.signal == "sell") {
+			console.log(ntf.signal + " " + FormatTime(ntf.system_date) + " - " + ntf.value + " | " + jump.direct + " - " + jump.jump_rate + " - " + jump.jump_time + " - " + jump.percent );
+		} else {
+			console.log(ntf.signal + " " + FormatTime(ntf.system_date) + " - " + ntf.value + " | " + jump.direct + " - " + jump.jump_rate + " - " + jump.jump_time + " - " + jump.percent );
+		}
+	}
 }

@@ -33,26 +33,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<!--
-BODY TAG OPTIONS:
-=================
-Apply one or more of the following classes to get the
-desired effect
-|---------------------------------------------------------|
-| SKINS         | skin-blue                               |
-|               | skin-black                              |
-|               | skin-purple                             |
-|               | skin-yellow                             |
-|               | skin-red                                |
-|               | skin-green                              |
-|---------------------------------------------------------|
-|LAYOUT OPTIONS | fixed                                   |
-|               | layout-boxed                            |
-|               | layout-top-nav                          |
-|               | sidebar-collapse                        |
-|               | sidebar-mini                            |
-|---------------------------------------------------------|
--->
 
 <body class="hold-transition skin-black">
   <div class="wrapper" style="overflow: hidden; padding-bottom: 10px; background: #ecf0f5;">
@@ -184,30 +164,29 @@ desired effect
                 <!-- The user image in the menu -->
                 <li class="user-header">
                   <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                  <p>
-                    Alexander Pierce - Web Developer
-                    <small>Member since Nov. 2012</small>
-                  </p>
+                  <p>Welcome</p>
                 </li>
                 <!-- Menu Body -->
                 <li class="user-body">
                   <div class="row">
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Followers</a>
+                    <div class="col-xs-6 text-center">
+                      <div class="form-group">
+												<input type="text" class="form-control input-sm" id="apiKey" placeholder="API Key">
+											</div>
                     </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Sales</a>
+                    <div class="col-xs-6 text-center">
+                      <div class="form-group">
+												<input type="text" class="form-control input-sm" id="secretKey" placeholder="Secret">
+											</div>
                     </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Friends</a>
-                    </div>
+                    
                   </div>
                   <!-- /.row -->
                 </li>
                 <!-- Menu Footer-->
                 <li class="user-footer">
                   <div class="pull-left">
-                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+										<button class="btn bg-yellow btn-flat" id="btn-api-save">Save</button>
                   </div>
                   <div class="pull-right">
                     <a href="#" class="btn btn-default btn-flat">Sign out</a>
@@ -243,7 +222,7 @@ desired effect
           <li class="header">SYMBOL</li>
           <!-- Optionally, you can add icons to the links -->
           <li class="treeview menu-open">
-            <a href="#"><i class="fa fa-link"></i> <span>FAV</span>
+            <a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>FAV</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -252,7 +231,7 @@ desired effect
             </ul>
           </li>
           <li class="treeview">
-            <a href="#"><i class="fa fa-link"></i> <span>BTC</span>
+            <a href="#"><i class="fa fa-circle-o text-red"></i> <span>BTC</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -261,7 +240,7 @@ desired effect
             </ul>
           </li>
           <li class="treeview">
-            <a href="#"><i class="fa fa-link"></i> <span>ETH</span>
+            <a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>ETH</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
@@ -319,7 +298,7 @@ desired effect
                 <li class="active"><a href="#tab-order" data-toggle="tab">Order</a></li>
                 <li><a href="#tab-profit" data-toggle="tab">Profit</a></li>
               </ul>
-              <div class="tab-content">
+              <div class="tab-content tab-content-height">
                 <div class="tab-pane active" id="tab-order">
                   <div class="row">
                     <div class="col-md-12">
@@ -386,22 +365,14 @@ desired effect
             <div class="box box-default">
               <div class="box-header">
                 <h3 class="box-title">History</h3>
+                <div class="box-tools pull-right">
+                  <button type="button" class="btn btn-box-tool" id="btn-clear-his"><i class="fa fa-recycle"></i>
+                  </button>
+                </div>
               </div>
               <div class="box-body">
-                <table class="table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th>asdasd</th>
-                      <th>asdasd</th>
-                      <th>asdasd</th>
-                    </tr>
-                  </thead>
+                <table class="table" id="tbl-history">
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>22</td>
-                      <td>333</td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -425,35 +396,16 @@ desired effect
       <div class="tab-content">
         <!-- Home tab content -->
         <div class="tab-pane active" id="control-sidebar-home-tab">
-          <h3 class="control-sidebar-heading">Binance Settings
-            <button class="btn bg-yellow btn-flat btn-xs pull-right" val="100" id="btn-api-save">Save</button>
-          </h3>
-          <!-- /.control-sidebar-menu -->
-          <div class="row">
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-              <div class="form-group">
-                <input type="text" class="form-control input-sm" id="apiKey" placeholder="API Key">
-              </div>
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-              <div class="form-group">
-                <input type="text" class="form-control input-sm" id="secretKey" placeholder="Secret">
-              </div>
-            </div>
-          </div>
           <h3 class="control-sidebar-heading">Balances <i id="btn-refesh-balance" class="fa fa-circle-o-notch pull-right"></i></h3>
           <ul class="control-sidebar-menu" id="binance-balance">
           </ul>
           <!-- /.control-sidebar-menu -->
         </div>
         <!-- /.tab-pane -->
-        <!-- Stats tab content -->
-        <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-        <!-- /.tab-pane -->
         <!-- Settings tab content -->
         <div class="tab-pane" id="control-sidebar-settings-tab">
           <div>
-            <h3 class="control-sidebar-heading" style="margin-top: 0px;">Binance Settings</h3>
+            <h3 class="control-sidebar-heading" style="margin-top: 0px;">Binance Auto</h3>
             <label class="control-sidebar-subheading">
               <input type="checkbox" class="pull-right minimal" checked> Auto
             </label>
@@ -516,7 +468,7 @@ desired effect
       checkboxClass: 'icheckbox_minimal-blue',
       radioClass: 'iradio_minimal-blue'
     });
-
+		
   </script>
 </body>
 
