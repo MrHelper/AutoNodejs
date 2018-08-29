@@ -348,13 +348,11 @@ function LoadHis(data) {
 		let row = "";
 		row += `<tr>`;
 		row += `<td>`;
-		row += `<p class="his-info text-red text-bold">${data[i].his[1]} - ${data[i].orderId}</p>`;
+		row += `<p class="his-info text-red text-bold">${data[i].his[1]}</p>`;
 		row += `<p class="his-info text-muted">${FormatTime(data[i].his[0])}</p>`;
 		row += `</td>`;
-		row += `<td><p class="his-info">${data[i].his[2].toLowerCase()}</p></td>`;
-		row += `<td>`;
+		row += `<td><p class="his-info">${data[i].his[2].toLowerCase()}</p>`;
 		row += `<p class="his-info">${data[i].his[3].toLowerCase()} </p>`;
-		row += `<p class="his-info">${data[i].his[4].toLowerCase()} </p>`;
 		row += `</td>`;
 		row += `<td><p class="his-info">${data[i].his[5]}</p>`;
 		row += `<p class="his-info">${data[i].his[6]}</p>`;

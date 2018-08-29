@@ -140,6 +140,7 @@ function PlaceMarketOrder(Symb,Amount,Side){
 		binance.marketSell(Symb, Amount);
 	}
 }
+
 // ----------------------- USERDATA
 
 function InitUserData() {

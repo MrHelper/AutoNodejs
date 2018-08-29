@@ -4,7 +4,7 @@ var Datastore = require('nedb'),
 		autoload: true
 	});
 
-const hisrow = 20;
+const hisrow = 40;
 
 function GetApiKey() {
 	db.find({
