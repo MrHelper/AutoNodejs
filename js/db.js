@@ -4,7 +4,7 @@ var Datastore = require('nedb'),
 		autoload: true
 	});
 
-const hisrow = 40;
+const hisrow = 100;
 
 function GetApiKey() {
 	db.find({
@@ -140,7 +140,7 @@ function GetHistory() {
 		type: 'his'
 	}).sort({
 		time: -1
-	}).limit(hisrow).exec(function (err, docs) {
+	}).limit(hisrow/5).exec(function (err, docs) {
 		LoadHis(docs);
 	});
 }
