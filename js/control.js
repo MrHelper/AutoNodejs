@@ -425,7 +425,7 @@ function CalcAutoSignal(symb) {
 }
 
 function LoadTradeList(data) {
-  if(data.length != 0){
+  if(data.length != 0 && data !== undefined){
     $('#tbl-trade tbody').html("");
     for(let i = 0 ; i < data.length ; i ++){
       let s_price= global.prices[data[i].symbol];
