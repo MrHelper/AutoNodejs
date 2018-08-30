@@ -29,7 +29,6 @@ function CloseAllWS() {
 function UpdateApiKey(apiKey, secretKey) {
 	binance = new bnbAPI().options({
 		useServerTime: true,
-		test: true,
 		APIKEY: apiKey,
 		APISECRET: secretKey,
 	});
@@ -141,6 +140,26 @@ function PlaceMarketOrder(Symb,Amount,Side){
 	}
 }
 
+function GetOpenOrderList(){
+  binance.openOrders(false, (error, openOrders) => {
+    console.log("openOrders()", openOrders);
+    global.openOrders = openOrders;
+  });
+}
+
+function CalcelOrder(Symb,OrderId){
+  binance.cancel(Symb, OrderId, (error, response, symbol) => {
+    console.log(Symb+" cancel response:", response);
+  });
+}
+
+function GetLastestPriceAll(){
+  binance.prices((error, ticker) => {
+    global.prices = ticker;
+    GetTrade();
+  });
+}
+
 // ----------------------- USERDATA
 
 function InitUserData() {
@@ -180,11 +199,22 @@ function execution_update(data) {
 			console.log("Order Failed! Reason: " + data.r);
 		}
 	}
+	if(executionType == "TRADE"){
+    if(side=="BUY"){
+      SetTrade(orderId,symbol,side,price,quantity);  
+    }else{
+      if(side=="SELL"){
+        SetSellTrade(symb,price);
+      }
+    }
+		
+	}
 	//NEW, CANCELED, REPLACED, REJECTED, TRADE, EXPIRED
 	console.log(symbol + "\t" + side + " " + executionType + " " + orderType + " ORDER #" + orderId);
 	let hisData = [orderTime,symbol,side,executionType,orderStatus,price,quantity];
 	SetHistory(orderId,hisData);
 	GetHistory();
+  GetOpenOrderList();
 }
 
 function RealTimeBalances(symb,avail,lock){

@@ -5963,3 +5963,9 @@ body::-webkit-scrollbar {
 	font-size: small;
 	text-transform: capitalize;
 }
+.text-small{
+  font-size: small;
+}
+.trade-item{
+  cursor: pointer;
+}
