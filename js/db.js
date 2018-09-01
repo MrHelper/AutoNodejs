@@ -39,6 +39,7 @@ function SetApiKey(apiKey, secretKey) {
         }
       }, {}, function (err, numReplaced) {});
     }
+    UpdateApiKey(apiKey,secretKey);
   });
 }
 
@@ -187,5 +188,16 @@ function SetSellTrade(symb, pri) {
     }
   }, {}, function (err, numReplaced) {
     GetLastestPriceAll();
+  });
+}
+
+function DeleteTrade(id) {
+  db.remove({
+    type: 'trade',
+    _id: id
+  }, {
+    multi: true
+  }, function (err, numRemoved) {
+    RemoveTrade(id);
   });
 }
