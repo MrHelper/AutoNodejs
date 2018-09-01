@@ -152,6 +152,7 @@ function PlaceMarketOrder(Symb, Amount, Side) {
 function GetOpenOrderList() {
   binance.openOrders(false, (error, openOrders) => {
     global.openOrders = openOrders;
+    CheckOpenOrderTIme(openOrders);
     LoadOprnOrderList(openOrders);
   });
 }
@@ -167,6 +168,18 @@ function GetLastestPriceAll() {
     global.prices = ticker;
     GetTrade();
   });
+}
+
+function CheckOpenOrderTIme(data){
+  for(let i = 0 ; i < data.length; i ++){
+    let orderTime = new Date(data[i].time);
+    let nowTime = new Date();
+    let diff = nowTime - orderTime;
+    let minuteDiff = Math.floor(diff % 3.6e5) / 6e4;
+    if(minuteDiff > 10){
+      CancelOrder(data[i].symbol , data[i].orderId);
+    }
+  }
 }
 
 // ----------------------- USERDATA

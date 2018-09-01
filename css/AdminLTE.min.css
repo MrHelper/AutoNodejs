@@ -5934,28 +5934,28 @@ body::-webkit-scrollbar-button {
 	background-color: #AAA;
 }
 
-body::-webkit-scrollbar-button:hover {
+.scroll-style::-webkit-scrollbar-button:hover {
 	background-color: #AAA;
 }
 
-body::-webkit-scrollbar-thumb {
+.scroll-style::-webkit-scrollbar-thumb {
 	background-color: #7d7d7d;
 	border-radius: 5px;
 }
 
-body::-webkit-scrollbar-thumb:hover {
+.scroll-style::-webkit-scrollbar-thumb:hover {
 	background-color: #5f5f5f;
 }
 
-body::-webkit-scrollbar-track {
+.scroll-style::-webkit-scrollbar-track {
 	background-color: #efefef;
 }
 
-body::-webkit-scrollbar-track:hover {
+.scroll-style::-webkit-scrollbar-track:hover {
 	background-color: #CCC;
 }
 
-body::-webkit-scrollbar {
+.scroll-style::-webkit-scrollbar {
 	width: 5px;
 }
 .his-info{
@@ -6063,4 +6063,9 @@ body::-webkit-scrollbar {
 .faa-parent.animated-hover:hover > .faa-horizontal {
   -webkit-animation: horizontal 2s ease infinite;
   animation: horizontal 2s ease infinite;
+}
+
+#tab-trade{
+  height: 280px;
+  overflow-y: scroll;
 }

@@ -151,19 +151,29 @@ function GetHistory() {
 }
 
 function SetTrade(ordId, symb, side, pri, amo) {
-  db.insert({
+  db.find({
     type: 'trade',
     orderId: ordId,
-    symbol: symb,
-    side: side,
-    amount: amo,
-    price_b: pri,
-    price_s: 0,
-    sell: false,
-    time: (new Date).getTime()
-  }, function (err, newDocs) {
-    GetLastestPriceAll();
-  });
+    symbol: symb
+  },function (err, docs){
+    if(docs.length == 0){
+      db.insert({
+        type: 'trade',
+        orderId: ordId,
+        symbol: symb,
+        side: side,
+        amount: amo,
+        price_b: pri,
+        price_s: 0,
+        sell: false,
+        time: (new Date).getTime()
+      }, function (err, newDocs) {
+        GetLastestPriceAll();
+      });
+    }
+  })
+  
+  
 }
 
 function GetTrade() {
