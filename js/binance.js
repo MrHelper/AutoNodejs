@@ -213,10 +213,9 @@ function execution_update(data) {
       SetTrade(orderId, symbol, side, price, quantity);
     } else {
       if (side == "SELL") {
-        SetSellTrade(symb, price);
+        SetSellTrade(symbol, price);
       }
     }
-
   }
   //NEW, CANCELED, REPLACED, REJECTED, TRADE, EXPIRED
   console.log(symbol + "\t" + side + " " + executionType + " " + orderType + " ORDER #" + orderId);
