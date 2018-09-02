@@ -707,7 +707,7 @@ function CalcNotifySignal(symb, data) {
       if (amount != 0) {
         console.log("Calc point buy " + symb);
         let current = global.prices[symb];
-        if (CalcBuyPrice(symb, current) == true) {
+        if (CalcBuyPrice(symb, ntf.value) == true) {
           PlaceLimitOrder(symb, amount, ntf.value, "buy");
         }
       }
