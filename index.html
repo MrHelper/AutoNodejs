@@ -58,7 +58,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- Tasks Menu -->
             <li class="dropdown messages-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Open order">
-                <i class='fa fa-envelope-o faa-horizontal animated'></i>
+                <i class='fa fa-envelope-o'></i>
                 <span class="label label-success open-order-count">0</span>
               </a>
               <ul class="dropdown-menu">
@@ -68,7 +68,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <ul class="menu" id="open-order-list">
                   </ul>
                 </li>
-                <li class="footer"><a href="#" id="btn-refresh-open-order" title="Refresh Order List"><i class="fa fa-refresh"></i></a></li>
+                <li class="footer"><a id="btn-refresh-open-order" title="Refresh Order List"><i class="fa fa-refresh"></i></a></li>
               </ul>
             </li>
             <!-- User Account Menu -->
@@ -104,9 +104,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </li>
                 <!-- Menu Footer-->
                 <li class="user-footer">
+<!--
                   <div class="pull-left">
                     <a href="#" class="btn btn-default btn-flat">Sign out</a>
                   </div>
+-->
                   <div class="pull-right">
                     <button class="btn bg-yellow btn-flat" id="btn-api-save">Save</button>
                   </div>
@@ -128,7 +130,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- search form (Optional) -->
         <form action="#" method="get" class="sidebar-form">
           <div class="input-group">
-            <input type="text" name="q" class="form-control" placeholder="Search...">
+            <input id="txt_search" type="text" name="q" class="form-control" placeholder="Search...">
             <span class="input-group-btn">
               <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
               </button>
@@ -324,21 +326,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <div class="tab-pane" id="control-sidebar-settings-tab">
           <div>
             <h3 class="control-sidebar-heading" style="margin-top: 0px;">Binance Auto</h3>
-            <label class="control-sidebar-subheading">
-              <input type="checkbox" id="auto-enabled" class="pull-right minimal" checked> Auto
+            <label class="control-sidebar-subheading" style="margin-bottom: 25px;">
+              <input type="checkbox" id="auto-enabled" class="pull-right minimal" checked> Enable Auto 
             </label>
-            <div class="form-group">
+            <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding-left: 0px">
+              <div class="form-group">
               <select name="" id="auto-symbol" class="form-control input-sm" required="required">
                 <option value="">Select Coin</option>
               </select>
             </div>
-            <div class="input-group form-group">
+            </div>
+            <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7"  style="padding: 0px;">
+              <div class="input-group form-group">
               <input type="number" class="form-control input-sm" id="auto-amount" placeholder="Số lượng">
               <span class="input-group-btn">
                 <button id="btn-auto-save" bid="" type="button" class="btn btn-sm btn-danger btn-flat">Save</button>
               </span>
             </div>
-
+            </div>
             <ul class="control-sidebar-menu" id="binance-auto">
 
             </ul>

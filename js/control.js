@@ -1,5 +1,7 @@
 var request = require('request');
-const {dialog} = require('electron').remote;
+const {
+  dialog
+} = require('electron').remote;
 // ----------------------- INIT CONST VARIABLE
 const CoinList = [
   "EOS", "TRX", "WTC", "ADA", "BNB", "XRP", "VEN", "BCD", "XLM", "ICX", "GTO", "NEO", "BCC", "XVG", "LTC", "VIBE", "RLC", "IOTA", "HSR", "QTUM", "ELF", "ENJ", "APPC", "BTG", "NEBL", "ETC", "ZRX", "TNB", "LRC", "SNT", "BRD", "SUB", "DNT", "OMG", "POE", "ARN", "LEND", "FUEL", "LSK", "POWR", "GVT", "NAV", "BTS", "STRAT", "XMR", "OST", "GXS", "ZEC", "EDO", "LINK", "CTR", "FUN", "WABI", "CDT", "YOYO", "QSP", "MDA", "ENG", "AION", "CND", "BCPT", "TRIG", "AST", "REQ", "KNC", "CMT", "DASH", "MANA", "EVX", "DLT", "MTL", "TNT", "BAT", "LUN", "NULS", "DGD", "BQX", "MOD", "ARK", "SALT", "GAS", "AMB", "RCN", "MCO", "ICN", "KMD", "SNGLS", "MTH", "WAVES", "STORJ", "RDN", "VIB", "ADX", "XZC", "SNM", "OAX", "PPT", "WINGS", "BNT"
@@ -12,13 +14,22 @@ var upBorderColor = '#008F28';
 var dom = document.getElementById('CoinChart');
 window["CoinChart"] = echarts.init(dom);
 var datapoint = [];
-const dialogSell = {buttons: ['OK', 'Cancel'], message: 'Do you want to sell it all?'}
-const dialogDelete = {buttons: ['OK', 'Cancel'], message: 'Do you want to delete this trade?'}
-const dialogCancelOrder = {buttons: ['OK', 'Cancel'], message: 'Do you want to cancel this order?'}
+const dialogSell = {
+  buttons: ['OK', 'Cancel'],
+  message: 'Do you want to sell it all?'
+}
+const dialogDelete = {
+  buttons: ['OK', 'Cancel'],
+  message: 'Do you want to delete this trade?'
+}
+const dialogCancelOrder = {
+  buttons: ['OK', 'Cancel'],
+  message: 'Do you want to cancel this order?'
+}
 // ----------------------- INTERVAL
 
 setInterval(function () {
-  if(CheckKey() == true){
+  if (CheckKey() == true) {
     GetSignalData();
     GetBuySellAll();
     GetBalances();
@@ -120,12 +131,12 @@ $(document).ready(function () {
     }
   });
 
-  $('#order-price').on('change',function(){
+  $('#order-price').on('change', function () {
     let amount = $('#order-amount').val();
     let price = $(this).val();
     $('#total-price').val(amount * price);
   });
-  
+
   $('#btn-place-order').on('click', function () {
     let amount = $('#order-amount').val();
     let price = $('#order-price').val();
@@ -143,35 +154,39 @@ $(document).ready(function () {
       PlaceLimitOrder(symb, amount, price, side);
     }
   });
-  
-  $('#btn-refresh-open-order').on('click',function(){
+
+  $('#btn-refresh-open-order').on('click', function () {
     GetOpenOrderList();
   });
-  
-  $('#open-order-list').on('click','.open-order-item',function(){
+
+  $('#open-order-list').on('click', '.open-order-item', function () {
     let orderid = $(this).attr('orderid');
     let symb = $(this).attr('symb');
-    dialog.showMessageBox(dialogCancelOrder, i => CancelOpenOrder(i,symb,orderid));
+    dialog.showMessageBox(dialogCancelOrder, i => CancelOpenOrder(i, symb, orderid));
   });
-  
-  $('#tbl-trade').on('click','.trade-item',function(){
+
+  $('#tbl-trade').on('click', '.trade-item', function () {
     let info = $(this).parent();
     let sell = info.attr('spri');
     let amo = info.attr('amou');
     let pri = info.attr('cpri');
     let tId = info.attr('tid');
     let symb = info.attr('symb');
-    if(sell == 0 ){    
-      dialog.showMessageBox(dialogSell, i => SellTrade(i,symb,amo,pri));
-    }else{
-      dialog.showMessageBox(dialogDelete, i => DeleteTradeRow(i,tId));
+    if (sell == 0) {
+      dialog.showMessageBox(dialogSell, i => SellTrade(i, symb, amo, pri));
+    } else {
+      dialog.showMessageBox(dialogDelete, i => DeleteTradeRow(i, tId));
     }
   });
-  
-  $('#tbl-trade').on('click','.trade-delete',function(){
+
+  $('#tbl-trade').on('click', '.trade-delete', function () {
     let tId = $(this).parents('tr').attr('tid');
-    dialog.showMessageBox(dialogDelete, i => DeleteTradeRow(i,tId));
-    
+    dialog.showMessageBox(dialogDelete, i => DeleteTradeRow(i, tId));
+
+  });
+
+  $('#txt_search').on('keyup', function () {
+    SearchCoin($(this).val().toUpperCase());
   });
 });
 
@@ -418,7 +433,7 @@ function LoadHis(data) {
 }
 
 function CheckSignal() {
-  if($('#auto-enabled').prop('checked')==true){
+  if ($('#auto-enabled').prop('checked') == true) {
     $('.auto-coin').each(function () {
       CalcAutoSignal($(this).attr('symbol').replace('-', ""));
     });
@@ -458,97 +473,98 @@ function CalcAutoSignal(symb) {
 }
 
 function LoadTradeList(data) {
-  try{
-    if(data.length != 0){
-    $('#tbl-trade tbody').html("");
-    for(let i = 0 ; i < data.length ; i ++){
-      let s_price= global.prices[data[i].symbol];
-      let percent = 0, coin = 0;
-      if(data[i].price_s != 0)
-        s_price = data[i].price_s;
-      percent = (s_price - data[i].price_b ) / data[i].price_b * 100;
-      percent = Math.round(percent * 10)/10;
-      coin = (s_price - data[i].price_b) * data[i].amount;
-      coin = Math.round(coin * 100000)/100000;
-      let row = "";
-      row += `<tr class="trade-${data[i].symbol} trade-list-item" orderId="${data[i].orderId}" symb="${data[i].symbol}" prib="${data[i].price_b}" spri="${data[i].price_s}" cpri="${global.prices[data[i].symbol]}" amou="${data[i].amount}" tid="${data[i]._id}">`;
-      row += `  <td class="trade-item">`;
-      row += `    <p class="his-info">`;
-      row += `      <span class="text-small">${data[i].symbol}</span> `;
-      row += `      <span class="text-navy curent-price">${global.prices[data[i].symbol]}</span> `;
-      row += `    </p>`;
-      row += `    <p class="his-info text-muted">`;
-      row += `      <span class="text-navy">`;
-      row += `        <span>${parseFloat(data[i].amount)}</span> \\ `;
-      row += `        <span class="per-profit">${percent}%</span>`;
-      row += `        <span class="mas-profit">${coin}</span>`;
-      row += `      </span>`;
-      row += `    </p>`;
-      row += `  </td>`;
-      row += `  <td class="text-right text-bold trade-item">`;
-      row += `    <p class="his-info text-light-blue">${data[i].price_b}</p>`;
-      row += `    <p class="his-info text-red sell-price">${data[i].price_s}</p>`;
-      row += `  </td>`;
-      row += `  <td class="text-right">`;
-      row += `    <a><i class="fa fa-trash-o trade-delete"></i></a>`;
-      row += `  </td>`;
-      row += `</tr>`;
-      $('#tbl-trade tbody ').append(row);
+  try {
+    if (data.length != 0) {
+      $('#tbl-trade tbody').html("");
+      for (let i = 0; i < data.length; i++) {
+        let s_price = global.prices[data[i].symbol];
+        let percent = 0,
+          coin = 0;
+        if (data[i].price_s != 0)
+          s_price = data[i].price_s;
+        percent = (s_price - data[i].price_b) / data[i].price_b * 100;
+        percent = Math.round(percent * 10) / 10;
+        coin = (s_price - data[i].price_b) * data[i].amount;
+        coin = Math.round(coin * 100000) / 100000;
+        let row = "";
+        row += `<tr class="trade-${data[i].symbol} trade-list-item" orderId="${data[i].orderId}" symb="${data[i].symbol}" prib="${data[i].price_b}" spri="${data[i].price_s}" cpri="${global.prices[data[i].symbol]}" amou="${data[i].amount}" tid="${data[i]._id}">`;
+        row += `  <td class="trade-item">`;
+        row += `    <p class="his-info">`;
+        row += `      <span class="text-small">${data[i].symbol}</span> `;
+        row += `      <span class="text-navy curent-price">${global.prices[data[i].symbol]}</span> `;
+        row += `    </p>`;
+        row += `    <p class="his-info text-muted">`;
+        row += `      <span class="text-navy">`;
+        row += `        <span>${parseFloat(data[i].amount)}</span> \\ `;
+        row += `        <span class="per-profit">${percent}%</span>`;
+        row += `        <span class="mas-profit">${coin}</span>`;
+        row += `      </span>`;
+        row += `    </p>`;
+        row += `  </td>`;
+        row += `  <td class="text-right text-bold trade-item">`;
+        row += `    <p class="his-info text-light-blue">${data[i].price_b}</p>`;
+        row += `    <p class="his-info text-red sell-price">${data[i].price_s}</p>`;
+        row += `  </td>`;
+        row += `  <td class="text-right">`;
+        row += `    <a><i class="fa fa-trash-o trade-delete"></i></a>`;
+        row += `  </td>`;
+        row += `</tr>`;
+        $('#tbl-trade tbody ').append(row);
+      }
     }
-  }
-  }catch(e){}
+  } catch (e) {}
 }
 
-function DeleteTradeRow(result, id){
-  if(result == 0 ){
+function DeleteTradeRow(result, id) {
+  if (result == 0) {
     DeleteTrade(id);
   }
 }
 
-function SellTrade(answer, symb, amount, price){
-  if( answer == 0 ){
-    PlaceLimitOrder(symb,amount,price,"sell");
+function SellTrade(answer, symb, amount, price) {
+  if (answer == 0) {
+    PlaceLimitOrder(symb, amount, price, "sell");
   }
 }
 
-function RemoveTrade(id){
-  $('.trade-list-item').each(function(){
-    if($(this).attr('tid') == id)
+function RemoveTrade(id) {
+  $('.trade-list-item').each(function () {
+    if ($(this).attr('tid') == id)
       $(this).remove();
   });
 }
 
-function LoadOprnOrderList(data){
+function LoadOprnOrderList(data) {
   let count = data.length;
   $('.open-order-count').text(count);
   $('#open-order-list').html("");
-  for(let i = 0 ; i < count ; i++){
+  for (let i = 0; i < count; i++) {
     let time = FormatTime(data[i].time);
     let row = "";
-    row +=`<li class="open-order-item" orderId="${data[i].orderId}" symb="${data[i].symbol}" >`;
-    row +=`<a href="#" class="text-bold">`;
-    row +=`<div class="pull-left"><p class="bg-red open-order-icon">S</p></div>`;
-    row +=`<h4>${data[i].symbol}<small><i class="fa fa-clock-o"></i> ${time}</small></h4>`;
-    row +=`<p><span>${parseFloat(data[i].origQty)}</span>`;
-    row +=`<span class="pull-right">${parseFloat(data[i].price)}</span></p>`;
-    row +=`</a>`;
-    row +=`</li>`;
+    row += `<li class="open-order-item" orderId="${data[i].orderId}" symb="${data[i].symbol}" >`;
+    row += `<a href="#" class="text-bold">`;
+    row += `<div class="pull-left"><p class="bg-red open-order-icon">S</p></div>`;
+    row += `<h4>${data[i].symbol}<small><i class="fa fa-clock-o"></i> ${time}</small></h4>`;
+    row += `<p><span>${parseFloat(data[i].origQty)}</span>`;
+    row += `<span class="pull-right">${parseFloat(data[i].price)}</span></p>`;
+    row += `</a>`;
+    row += `</li>`;
     $('#open-order-list').append(row);
   }
 }
 
-function CancelOpenOrder(answer,symb,orderId){
-  if(answer==0){
-    CancelOrder(symb,orderId);
+function CancelOpenOrder(answer, symb, orderId) {
+  if (answer == 0) {
+    CancelOrder(symb, orderId);
   }
 }
 
 // ----------------------- SMALL FUNCTION
 
-function CheckKey(){
-  if($('#apiKey').val() != "" && $('#secretKey').val() != ""){
+function CheckKey() {
+  if ($('#apiKey').val() != "" && $('#secretKey').val() != "") {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
@@ -776,7 +792,7 @@ function CalcSellPrice(symb, price) {
       if (window[symb].current <= price) {
         window[symb].current = price;
         console.log(window[symb]);
-        if(window[symb].step > 0 && window[symb].current < price)
+        if (window[symb].step > 0 && window[symb].current < price)
           window[symb].step = window[symb].step - 1;
         return false;
       } else {
@@ -817,7 +833,7 @@ function CalcBuyPrice(symb, price) {
       if (window[symb].current >= price) {
         window[symb].current = price;
         console.log(window[symb]);
-        if(window[symb].step > 0 && window[symb].current > price)
+        if (window[symb].step > 0 && window[symb].current > price)
           window[symb].step = window[symb].step - 1;
         return false;
       } else {
@@ -852,30 +868,45 @@ function CheckBuyOrdered(symb) {
   return true;
 }
 
-function CheckSellPercent(symb,price){
-  let percent = 0 ;
+function CheckSellPercent(symb, price) {
+  let percent = 0;
   let profit = 0;
-  if($('.trade-'+symb).length != 0){
-    $('.trade-'+symb).each(function(){
-      if($(this).attr('spri')==0){
-        let price_buy = $('.trade-'+symb).attr('prib');
-        let amo = $('.trade-'+symb).attr('amou');
-        let mas = $('.trade-'+symb).attr('symb');
-        mas = mas.substring(mas.length-3,mas);
+  if ($('.trade-' + symb).length != 0) {
+    $('.trade-' + symb).each(function () {
+      if ($(this).attr('spri') == 0) {
+        let price_buy = $('.trade-' + symb).attr('prib');
+        let amo = $('.trade-' + symb).attr('amou');
+        let mas = $('.trade-' + symb).attr('symb');
+        mas = mas.substring(mas.length - 3, mas);
         percent = (price - price_buy) / price_buy * 100;
-        if(mas == "ETH"){
-          if((price - price_buy) * amou > 0.005)
+        if (mas == "ETH") {
+          if ((price - price_buy) * amou > 0.005)
             return true;
         }
       }
     });
-  }else{
+  } else {
     console.log("Not in trade list");
     return true;
   }
-  if(percent > 1)
+  if (percent > 1)
     return true;
   else
     return false;
-  
+
+}
+
+function SearchCoin(Key) {
+  if(Key != ""){
+    $('.menu-symbol').addClass('hidden');
+    $('.menu-symbol').each(function () {
+//      let mast = $(this).attr('mast');
+//      let alt = $(this).attr('alt');
+//      let symb = alt + mast;
+      if($(this).attr('class').indexOf(Key) != -1)
+        $(this).removeClass('hidden');
+    });
+  }else{
+    $('.menu-symbol').removeClass('hidden');
+  }
 }

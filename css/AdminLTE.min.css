@@ -782,8 +782,8 @@ a:focus {
 .control-sidebar-bg,
 .control-sidebar {
 	top: 0;
-	right: -230px;
-	width: 230px;
+	right: -250px;
+	width: 250px;
 	-webkit-transition: right .3s ease-in-out;
 	-o-transition: right .3s ease-in-out;
 	transition: right .3s ease-in-out
@@ -820,7 +820,7 @@ a:focus {
 	.control-sidebar-open .content-wrapper,
 	.control-sidebar-open .right-side,
 	.control-sidebar-open .main-footer {
-		margin-right: 230px
+		margin-right: 250px
 	}
 }
 
@@ -5975,94 +5975,6 @@ body::-webkit-scrollbar-button {
   line-height: 10px;
   padding: 10px 14px;
 
-}
-
-@-webkit-keyframes horizontal {
-  0% {
-    -webkit-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  6% {
-    -webkit-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  12% {
-    -webkit-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  18% {
-    -webkit-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  24% {
-    -webkit-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  30% {
-    -webkit-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  36% {
-    -webkit-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-}
-
-@keyframes horizontal {
-  0% {
-    -webkit-transform: translate(0,0);
-    -ms-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  6% {
-    -webkit-transform: translate(5px,0);
-    -ms-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  12% {
-    -webkit-transform: translate(0,0);
-    -ms-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  18% {
-    -webkit-transform: translate(5px,0);
-    -ms-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  24% {
-    -webkit-transform: translate(0,0);
-    -ms-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-
-  30% {
-    -webkit-transform: translate(5px,0);
-    -ms-transform: translate(5px,0);
-    transform: translate(5px,0);
-  }
-
-  36% {
-    -webkit-transform: translate(0,0);
-    -ms-transform: translate(0,0);
-    transform: translate(0,0);
-  }
-}
-
-.faa-horizontal.animated,
-.faa-horizontal.animated-hover:hover,
-.faa-parent.animated-hover:hover > .faa-horizontal {
-  -webkit-animation: horizontal 2s ease infinite;
-  animation: horizontal 2s ease infinite;
 }
 
 #tab-trade{
