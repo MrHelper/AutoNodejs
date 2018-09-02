@@ -708,7 +708,7 @@ function CalcNotifySignal(symb, data) {
         console.log("Calc point buy " + symb);
         let current = global.prices[symb];
         if (CalcBuyPrice(symb, ntf.value) == true) {
-          PlaceLimitOrder(symb, amount, ntf.value, "buy");
+          PlaceLimitOrder(symb, amount, current, "buy");
         }
       }
       //      Log
@@ -777,7 +777,7 @@ function CalcSellPrice(symb, price) {
         window[symb].current = price;
         console.log(window[symb]);
         if(window[symb].step > 0 && window[symb].current < price)
-          window[symb].step--;
+          window[symb].step = window[symb].step - 1;
         return false;
       } else {
         window[symb].current = price;
@@ -818,7 +818,7 @@ function CalcBuyPrice(symb, price) {
         window[symb].current = price;
         console.log(window[symb]);
         if(window[symb].step > 0 && window[symb].current > price)
-          window[symb].step--;
+          window[symb].step = window[symb].step - 1;
         return false;
       } else {
         window[symb].current = price;
