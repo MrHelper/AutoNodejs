@@ -34,6 +34,7 @@ setInterval(function () {
     GetBuySellAll();
     GetBalances();
     CheckSignal();
+    GetOpenOrderList();
   }
 }, 20000);
 
@@ -187,6 +188,17 @@ $(document).ready(function () {
 
   $('#txt_search').on('keyup', function () {
     SearchCoin($(this).val().toUpperCase());
+  });
+  
+  $('#auto-prof').on('change', function () {
+    let stoplost = $('#auto-stop').val();
+    let profit = $(this).val();
+    SetProfit(profit,stoplost);
+  });
+  $('#auto-stop').on('change', function () {
+    let stoplost = $(this).val();
+    let profit = $('#auto-prof').val();
+    SetProfit(profit,stoplost);
   });
 });
 
@@ -723,7 +735,7 @@ function CalcNotifySignal(symb, data) {
       if (amount != 0) {
         console.log("Calc point buy " + symb);
         let current = global.prices[symb];
-        if (CalcBuyPrice(symb, ntf.value) == true) {
+        if (CalcBuyPrice(symb, current) == true) {
           PlaceLimitOrder(symb, amount, current, "buy");
         }
       }
@@ -870,7 +882,10 @@ function CheckBuyOrdered(symb) {
 
 function CheckSellPercent(symb, price) {
   let percent = 0;
-  let profit = 0;
+  let profit = $('#auto-prof').val();
+  if(profit == "")
+    profit = 1;
+  let stoplost = $('#auto-stop').val();
   if ($('.trade-' + symb).length != 0) {
     $('.trade-' + symb).each(function () {
       if ($(this).attr('spri') == 0) {
@@ -879,9 +894,13 @@ function CheckSellPercent(symb, price) {
         let mas = $('.trade-' + symb).attr('symb');
         mas = mas.substring(mas.length - 3, mas);
         percent = (price - price_buy) / price_buy * 100;
-        if (mas == "ETH") {
-          if ((price - price_buy) * amou > 0.005)
+        if (percent > profit)
+          return true;
+        else{
+          if(percent <= stoplost && stoplost != "")
             return true;
+          else
+            return false;
         }
       }
     });
@@ -889,11 +908,6 @@ function CheckSellPercent(symb, price) {
     console.log("Not in trade list");
     return true;
   }
-  if (percent > 1)
-    return true;
-  else
-    return false;
-
 }
 
 function SearchCoin(Key) {

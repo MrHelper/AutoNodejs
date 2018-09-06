@@ -8,7 +8,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>CryptoTrade</title>
+  <title>ABT</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -329,20 +329,32 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <label class="control-sidebar-subheading" style="margin-bottom: 25px;">
               <input type="checkbox" id="auto-enabled" class="pull-right minimal" checked> Enable Auto 
             </label>
-            <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding-left: 0px">
-              <div class="form-group">
-              <select name="" id="auto-symbol" class="form-control input-sm" required="required">
-                <option value="">Select Coin</option>
-              </select>
+            <div class="row">
+              <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <div class="form-group">
+                  <input type="number" class="form-control input-sm" id="auto-prof" placeholder="% Chốt lời">
+                </div>
+              </div>
+              <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <input type="number" class="form-control input-sm" id="auto-stop" placeholder="% Cắt lỗ">
+              </div>
             </div>
-            </div>
-            <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7"  style="padding: 0px;">
-              <div class="input-group form-group">
-              <input type="number" class="form-control input-sm" id="auto-amount" placeholder="Số lượng">
-              <span class="input-group-btn">
-                <button id="btn-auto-save" bid="" type="button" class="btn btn-sm btn-danger btn-flat">Save</button>
-              </span>
-            </div>
+            <div class="row">
+              <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" >
+                <div class="form-group">
+                <select name="" id="auto-symbol" class="form-control input-sm" required="required">
+                  <option value="" selected="selected">Select Coin</option>
+                </select>
+              </div>
+              </div>
+              <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7"  >
+                <div class="input-group form-group">
+                <input type="number" class="form-control input-sm" id="auto-amount" placeholder="Số lượng">
+                <span class="input-group-btn">
+                  <button id="btn-auto-save" bid="" type="button" class="btn btn-sm btn-danger btn-flat">Save</button>
+                </span>
+              </div>
+              </div>
             </div>
             <ul class="control-sidebar-menu" id="binance-auto">
 

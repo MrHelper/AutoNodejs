@@ -1,19 +1,19 @@
 {
-  "name": "AutoNodeJS",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ABT",
+  "version": "1.0.1",
+  "description": "Auto trade binance",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . --all"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hung Nguyen",
   "license": "ISC",
   "dependencies": {
     "electron": "^2.0.8",
     "nedb": "^1.8.0",
     "node-binance-api": "^0.8.1",
-    "npm": "^6.4.0"
+    "npm": "^6.4.1"
   }
 }

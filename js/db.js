@@ -14,6 +14,8 @@ function GetApiKey() {
     if (docs.length != 0) {
       $('#apiKey').val(docs[0].api);
       $('#secretKey').val(docs[0].secret);
+      $('#auto-prof').val(docs[0].profit);
+      $('#auto-stop').val(docs[0].stoplost);
       UpdateApiKey(docs[0].api, docs[0].secret);
     }
   });
@@ -27,7 +29,9 @@ function SetApiKey(apiKey, secretKey) {
       db.insert({
         type: 'api',
         api: apiKey,
-        secret: secretKey
+        secret: secretKey,
+        profit : 0,
+        stoplost : 0
       }, function (err, newDocs) {});
     } else {
       db.update({
@@ -40,6 +44,31 @@ function SetApiKey(apiKey, secretKey) {
       }, {}, function (err, numReplaced) {});
     }
     UpdateApiKey(apiKey,secretKey);
+  });
+}
+
+function SetProfit(profit,stoplost){
+  db.find({
+    type: 'api'
+  }, function (err, docs) {
+    if (docs.length == 0) {
+      db.insert({
+        type: 'api',
+        api: "0",
+        secret: "0",
+        profit : profit,
+        stoplost : stoplost
+      }, function (err, newDocs) {});
+    } else {
+      db.update({
+        type: 'api'
+      }, {
+        $set: {
+          profit: profit,
+          stoplost: stoplost
+        }
+      }, {}, function (err, numReplaced) {});
+    }
   });
 }
 
