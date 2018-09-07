@@ -5982,11 +5982,12 @@ body::-webkit-scrollbar-button {
   overflow-y: auto;
 }
 #tab-log{
-    height: 280px;
-    overflow-y: auto;
+  height: 280px;
+  overflow-y: auto;
 }
 
-#tab-log p{
-  color: #8c8c8c;
+#tab-log p {
+  color: #333;
   margin: 0;
+  font-size: smaller;
 }

@@ -732,7 +732,7 @@ function CalcNotifySignal(symb, data) {
       let amount = GetSellAmountAvail(symb);
       if (amount != 0) {
         let current = global.prices[symb];
-        AddLog("Check point sell " + current);
+        AddLog("Check point sell " + symb + " " + current);
         console.log("Calc point sell " + symb);
         
         if (CalcSellPrice(symb, current) == true) {
@@ -743,7 +743,7 @@ function CalcNotifySignal(symb, data) {
       let amount = GetBuyAmountAvail(symb, ntf.value);
       if (amount != 0) {
         let current = global.prices[symb];
-        AddLog("Check point buy " + current);
+        AddLog("Check point buy " + symb + " " + current);
         console.log("Calc point buy " + symb);
         if (CalcBuyPrice(symb, current) == true) {
           PlaceLimitOrder(symb, amount, current, "buy");
@@ -929,9 +929,9 @@ function SearchCoin(Key) {
 }
 
 function AddLog(logstring){
-  $('#tab-log p').length;
-  if( $('#tab-log p').length >= 100){
-    $('#tab-log p')[99].remove();
+  let count = $('#tab-log p').length;
+  if( $('#tab-log p').length >= 150){
+    $('#tab-log p')[count-1].remove();
   }
-  $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm:ss") +' : '+logstring+'</p>')
+  $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm:ss") +' : '+logstring.toUpperCase()+'</p>')
 }
