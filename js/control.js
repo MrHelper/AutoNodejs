@@ -149,7 +149,7 @@ $(document).ready(function () {
       side = "sell";
     }
     amount = CalcAmount(symb, amount, price);
-    if ((price * amount) > maxTT) {
+    if ((price * amount) > maxTT && side !="sell") {
       return;
     } else {
       PlaceLimitOrder(symb, amount, price, side);
