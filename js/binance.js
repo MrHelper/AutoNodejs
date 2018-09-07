@@ -4,16 +4,7 @@ var binance = new bnbAPI().options({
 });
 
 ExchangeInfo();
-//const binance = require('node-binance-api')().options({
-//	APIKEY: 'IKA0r7ZsSfmaI9DAIdRUTj6ngCX8BwKOBuf4dIaPyqmGnz2O8rzMktm4xMTrycwx',
-//  APISECRET: 'M6VEwpa2oTkwbm9L2ugfIruRDXRYg2CDmls9n3UQtIO1KYibbwKs5zZXmEQ2qatD',
-//  useServerTime: true, // If you get timestamp errors, synchronize to server time at startup
-//  test: true, // If you want to use sandbox mode where orders are simulated
-//});
 
-//binance.openOrders(false, (error, openOrders) => {
-//  console.log("openOrders", openOrders);
-//});
 function AfterUpdateAPI() {
   CloseAllWS();
   InitUserData();
@@ -133,9 +124,11 @@ function CalcAmount(symb, amount, price) {
 function PlaceLimitOrder(Symb, Amount, Price, Side) {
   let Amo = CalcAmount(Symb,Amount,Price);
   if (Side == "buy") {
+    AddLog("Buy " + Symb +"\t "+ Amo + " - " + Price);
     console.log("Buy " + Symb + " A:" + Amo + "/ P:" + Price)
     binance.buy(Symb, Amo, Price);
   } else {
+    AddLog("Sell " + Symb +"\t "+ Amo + " - " + Price);
     console.log("Sell " + Symb + " A:" + Amo + "/ P:" + Price)
     binance.sell(Symb, Amo, Price);
   }
@@ -153,12 +146,13 @@ function GetOpenOrderList() {
   binance.openOrders(false, (error, openOrders) => {
     global.openOrders = openOrders;
     CheckOpenOrderTime(openOrders);
-    LoadOprnOrderList(openOrders);
+    LoadOpenOrderList(openOrders);
   });
 }
 
 function CancelOrder(Symb, OrderId) {
   binance.cancel(Symb, OrderId, (error, response, symbol) => {
+    AddLog("OrderID # " + OrderId + "\t" + Symb + " cancel");
     console.log(Symb + " cancel response:", response);
   });
 }
@@ -189,7 +183,6 @@ function InitUserData() {
 }
 
 function balance_update(data) {
-  console.log("Balance Update");
   $('#binance-balance').html("");
   for (let obj of data.B) {
     let {
@@ -204,7 +197,6 @@ function balance_update(data) {
 }
 
 function execution_update(data) {
-  console.log(data);
   let {
     x: executionType,
     s: symbol,
@@ -218,6 +210,7 @@ function execution_update(data) {
   } = data;
   if (executionType == "NEW") {
     if (orderStatus == "REJECTED") {
+      AddLog(symbol + " Order Failed! Reason: " + data.r);
       console.log("Order Failed! Reason: " + data.r);
     }
   }
@@ -231,6 +224,7 @@ function execution_update(data) {
     }
   }
   //NEW, CANCELED, REPLACED, REJECTED, TRADE, EXPIRED
+  AddLog(symbol + "\t" + side + " " + executionType + " " + " ORDER # " + orderId);
   console.log(symbol + "\t" + side + " " + executionType + " " + orderType + " ORDER #" + orderId);
   let hisData = [orderTime, symbol, side, executionType, orderStatus, price, quantity];
   SetHistory(orderId, hisData);

@@ -250,6 +250,7 @@ function GetBuySellAll() {
       method: 'GET'
     }, function (err, res, body) {
       if (err) {
+        AddLog(err);
         console.log(err);
       } else {
         try {
@@ -294,6 +295,7 @@ function GetSignalData() {
         method: 'GET'
       }, function (err, res, body) {
         if (err) {
+          AddLog(err);
           console.log(err);
         } else {
           UpdateSignalPoint(JSON.parse(body));
@@ -472,6 +474,7 @@ function CalcAutoSignal(symb) {
       method: 'GET'
     }, function (err, res, body) {
       if (err) {
+        AddLog(err);
         console.log(err);
       } else {
         try {
@@ -546,7 +549,7 @@ function RemoveTrade(id) {
   });
 }
 
-function LoadOprnOrderList(data) {
+function LoadOpenOrderList(data) {
   let count = data.length;
   $('.open-order-count').text(count);
   $('#open-order-list').html("");
@@ -555,7 +558,11 @@ function LoadOprnOrderList(data) {
     let row = "";
     row += `<li class="open-order-item" orderId="${data[i].orderId}" symb="${data[i].symbol}" >`;
     row += `<a href="#" class="text-bold">`;
-    row += `<div class="pull-left"><p class="bg-red open-order-icon">S</p></div>`;
+    if(data[i].side=="BUY"){
+      row += `<div class="pull-left"><p class="bg-navy open-order-icon">B</p></div>`;  
+    }else{
+      row += `<div class="pull-left"><p class="bg-red open-order-icon">S</p></div>`;  
+    }
     row += `<h4>${data[i].symbol}<small><i class="fa fa-clock-o"></i> ${time}</small></h4>`;
     row += `<p><span>${parseFloat(data[i].origQty)}</span>`;
     row += `<span class="pull-right">${parseFloat(data[i].price)}</span></p>`;
@@ -724,8 +731,10 @@ function CalcNotifySignal(symb, data) {
     if (ntf.signal == "sell") {
       let amount = GetSellAmountAvail(symb);
       if (amount != 0) {
-        console.log("Calc point sell " + symb);
         let current = global.prices[symb];
+        AddLog("Check point sell " + current);
+        console.log("Calc point sell " + symb);
+        
         if (CalcSellPrice(symb, current) == true) {
           PlaceLimitOrder(symb, amount, ntf.value, "sell");
         }
@@ -733,8 +742,9 @@ function CalcNotifySignal(symb, data) {
     } else {
       let amount = GetBuyAmountAvail(symb, ntf.value);
       if (amount != 0) {
-        console.log("Calc point buy " + symb);
         let current = global.prices[symb];
+        AddLog("Check point buy " + current);
+        console.log("Calc point buy " + symb);
         if (CalcBuyPrice(symb, current) == true) {
           PlaceLimitOrder(symb, amount, current, "buy");
         }
@@ -798,12 +808,10 @@ function CalcSellPrice(symb, price) {
         step: 0,
         order: false
       };
-      console.log(window[symb]);
       return false;
     } else {
       if (window[symb].current <= price) {
         window[symb].current = price;
-        console.log(window[symb]);
         if (window[symb].step > 0 && window[symb].current < price)
           window[symb].step = window[symb].step - 1;
         return false;
@@ -811,7 +819,6 @@ function CalcSellPrice(symb, price) {
         window[symb].current = price;
         window[symb].step = window[symb].step + 1;
         if (window[symb].step >= CountPrice && window[symb].first < window[symb].current) {
-          console.log(window[symb]);
           if (window[symb].order == false) {
             window[symb].order = true;
             return true;
@@ -819,7 +826,6 @@ function CalcSellPrice(symb, price) {
             return false;
           }
         } else {
-          console.log(window[symb]);
           return false;
         }
       }
@@ -839,12 +845,10 @@ function CalcBuyPrice(symb, price) {
         step: 0,
         order: false
       };
-      console.log(window[symb]);
       return false;
     } else {
       if (window[symb].current >= price) {
         window[symb].current = price;
-        console.log(window[symb]);
         if (window[symb].step > 0 && window[symb].current > price)
           window[symb].step = window[symb].step - 1;
         return false;
@@ -852,7 +856,6 @@ function CalcBuyPrice(symb, price) {
         window[symb].current = price;
         window[symb].step = window[symb].step + 1;
         if (window[symb].step >= CountPrice && window[symb].first > window[symb].current) {
-          console.log(window[symb]);
           if (window[symb].order == false) {
             window[symb].order = true;
             return true;
@@ -860,7 +863,6 @@ function CalcBuyPrice(symb, price) {
             return false;
           }
         } else {
-          console.log(window[symb]);
           return false;
         }
       }
@@ -905,6 +907,7 @@ function CheckSellPercent(symb, price) {
       }
     });
   } else {
+    AddLog(symb + " not in trade list");
     console.log("Not in trade list");
     return true;
   }
@@ -923,4 +926,12 @@ function SearchCoin(Key) {
   }else{
     $('.menu-symbol').removeClass('hidden');
   }
+}
+
+function AddLog(logstring){
+  $('#tab-log p').length;
+  if( $('#tab-log p').length > 100){
+    $('#tab-log p')[99].remove();
+  }
+  $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm") +' : '+logstring+'</p>')
 }

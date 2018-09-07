@@ -5979,5 +5979,14 @@ body::-webkit-scrollbar-button {
 
 #tab-trade{
   height: 280px;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+#tab-log{
+    height: 280px;
+    overflow-y: auto;
+}
+
+#tab-log p{
+  color: #8c8c8c;
+  margin: 0;
 }
