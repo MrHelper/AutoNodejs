@@ -886,7 +886,7 @@ function CheckSellPercent(symb, price) {
   let percent = 0;
   let profit = $('#auto-prof').val();
   if(profit == "")
-    profit = 1;
+    profit = 0.4;
   let stoplost = $('#auto-stop').val();
   if ($('.trade-' + symb).length != 0) {
     $('.trade-' + symb).each(function () {
@@ -930,8 +930,8 @@ function SearchCoin(Key) {
 
 function AddLog(logstring){
   $('#tab-log p').length;
-  if( $('#tab-log p').length > 100){
+  if( $('#tab-log p').length >= 100){
     $('#tab-log p')[99].remove();
   }
-  $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm") +' : '+logstring+'</p>')
+  $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm:ss") +' : '+logstring+'</p>')
 }
