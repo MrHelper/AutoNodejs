@@ -169,12 +169,11 @@ $(document).ready(function () {
   $('#tbl-trade').on('click', '.trade-item', function () {
     let info = $(this).parent();
     let sell = info.attr('spri');
-    let amo = info.attr('amou');
     let pri = info.attr('cpri');
     let tId = info.attr('tid');
     let symb = info.attr('symb');
     if (sell == 0) {
-      dialog.showMessageBox(dialogSell, i => SellTrade(i, symb, amo, pri));
+      dialog.showMessageBox(dialogSell, i => SellTrade(i, symb, pri));
     } else {
       dialog.showMessageBox(dialogDelete, i => DeleteTradeRow(i, tId));
     }
@@ -536,8 +535,9 @@ function DeleteTradeRow(result, id) {
   }
 }
 
-function SellTrade(answer, symb, amount, price) {
+function SellTrade(answer, symb, price) {
   if (answer == 0) {
+    let amount = GetSellAmountAvail(symb);
     PlaceLimitOrder(symb, amount, price, "sell");
   }
 }
@@ -818,7 +818,7 @@ function CalcSellPrice(symb, price) {
       } else {
         window[symb].current = price;
         window[symb].step = window[symb].step + 1;
-        if (window[symb].step >= CountPrice && window[symb].first < window[symb].current) {
+        if (window[symb].step >= CountPrice) {
           if (window[symb].order == false) {
             window[symb].order = true;
             return true;
