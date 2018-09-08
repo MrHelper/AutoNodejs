@@ -271,10 +271,10 @@ function GetBuySellAll() {
             $('.' + coin + ' a span').text(data.sell[i].signal);
             $('.' + coin + ' a span').addClass('bg-red');
           }
-        } catch (e) {}
+        } catch (e) { console.log(e) }
       }
     });
-  } catch (e) {}
+  } catch (e) { console.log(e) }
 }
 
 function GetSignalData() {
@@ -298,13 +298,12 @@ function GetSignalData() {
         method: 'GET'
       }, function (err, res, body) {
         if (err) {
-          AddLog(err);
           console.log(err);
         } else {
           UpdateSignalPoint(JSON.parse(body));
         }
       });
-    } catch (e) {}
+    } catch (e) {console.log(e)}
   }
 }
 
@@ -483,10 +482,10 @@ function CalcAutoSignal(symb) {
           let data = JSON.parse(JSON.parse(body).result);
           let symb = JSON.parse(body).currency.replace('-', "").toUpperCase();
           CalcNotifySignal(symb, data);
-        } catch (e) {}
+        } catch (e) { console.log(e) }
       }
     });
-  } catch (e) {}
+  } catch (e) { console.log(e) }
 }
 
 function LoadTradeList(data) {
@@ -529,7 +528,7 @@ function LoadTradeList(data) {
         $('#tbl-trade tbody ').append(row);
       }
     }
-  } catch (e) {}
+  } catch (e) { console.log(e) }
 }
 
 function DeleteTradeRow(result, id) {
@@ -617,7 +616,7 @@ function SplitChartData(data) {
       categoryData: categoryData,
       values: values
     };
-  } catch (e) {}
+  } catch (e) { console.log(e) }
 }
 
 function InitChart() {
@@ -696,7 +695,7 @@ function InitChart() {
   $(window).on('resize', function () {
     try {
       window["CoinChart"].resize();
-    } catch (e) {}
+    } catch (e) { console.log(e) }
   });
 }
 
@@ -801,6 +800,7 @@ function GetBuyAmountAvail(symb, price) {
 }
 
 function CalcSellPrice(symb, price) {
+  let result = false;
   if (CheckSellPercent(symb, price) == 1) {
     if (window[symb] === undefined) {
       window[symb] = {
@@ -810,7 +810,7 @@ function CalcSellPrice(symb, price) {
         order: false
       };
       AddLog("Sell " + symb + " init check " + price);
-      return false;
+      result = false;
     } else {
       if (window[symb].current <= price) {
         window[symb].current = price;
@@ -818,29 +818,32 @@ function CalcSellPrice(symb, price) {
           window[symb].step = window[symb].step - 1;
         }
         AddLog("Sell " + symb + "\t" + " price up " + price);
-        return false;
+        result = false;
       } else {
         window[symb].current = price;
         window[symb].step = window[symb].step + 1;
+        AddLog("Sell " + symb + "\t" + " price down " + price);
         if (window[symb].step >= CountPrice) {
           if (window[symb].order == false) {
             window[symb].order = true;
-            AddLog("Sell " + symb + "\t" + " " + current);
-            return true;
+            AddLog("Sell " + symb + "\t" + " OK " + price);
+            result = true;
           } else {
             AddLog("Sell " + symb + "\t" + " ordered ");
-            return false;
+            result = false;
           }
         } else {
           AddLog("Sell " + symb + "\t" + " count " + window[symb].step);
-          return false;
+          result = false;
         }
       }
     }
   } else {
     AddLog("Sell " + symb + "\t" + " percent check fail ");
-    return false;
+    result = false;
   }
+  
+  return result;
 }
 
 function CalcBuyPrice(symb, price) {
@@ -864,13 +867,14 @@ function CalcBuyPrice(symb, price) {
       } else {
         window[symb].current = price;
         window[symb].step = window[symb].step + 1;
+        AddLog("Buy " + symb + "\t" + " price up " + price);
         if (window[symb].step >= CountPrice && window[symb].first > window[symb].current) {
           if (window[symb].order == false) {
             window[symb].order = true;
-            AddLog("Buy " + symb + "\t" + price);
+            AddLog("Buy " + symb + "\t" + " OK " + price);
             return true;
           } else {
-            AddLog("Buy " + symb + "\t" + " ordered");
+            AddLog("Buy " + symb + "\t" + " ordered " + price);
             return false;
           }
         } else {
