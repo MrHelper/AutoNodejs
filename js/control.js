@@ -39,6 +39,10 @@ setInterval(function () {
 }, 20000);
 
 setInterval(function () {
+  CheckAutoCoinError();
+}, 120000);
+
+setInterval(function () {
   GetLastestPriceAll();
 }, 10000);
 
@@ -473,7 +477,6 @@ function CalcAutoSignal(symb) {
       method: 'GET'
     }, function (err, res, body) {
       if (err) {
-        AddLog(err);
         console.log(err);
       } else {
         try {
@@ -934,4 +937,10 @@ function AddLog(logstring){
     $('#tab-log p')[count-1].remove();
   }
   $('#tab-log').prepend('<p>'+ moment().format("MM/DD HH:mm:ss") +' : '+logstring.toUpperCase()+'</p>')
+}
+
+function CheckAutoCoinError(){
+  if($('.auto-coin').length == 0){
+    location.reload();
+  }
 }
