@@ -735,9 +735,7 @@ function CalcNotifySignal(symb, data) {
       let amount = GetSellAmountAvail(symb);
       if (amount != 0) {
         let current = global.prices[symb];
-        AddLog("Check point sell " + symb + " " + current);
         console.log("Calc point sell " + symb);
-        
         if (CalcSellPrice(symb, current) == true) {
           PlaceLimitOrder(symb, amount, ntf.value, "sell");
         }
@@ -803,7 +801,7 @@ function GetBuyAmountAvail(symb, price) {
 }
 
 function CalcSellPrice(symb, price) {
-  if (CheckSellPercent(symb, price) == true) {
+  if (CheckSellPercent(symb, price) == 1) {
     if (window[symb] === undefined) {
       window[symb] = {
         first: price,
@@ -811,12 +809,15 @@ function CalcSellPrice(symb, price) {
         step: 0,
         order: false
       };
+      AddLog("Sell " + symb + " init check " + price);
       return false;
     } else {
       if (window[symb].current <= price) {
         window[symb].current = price;
-        if (window[symb].step > 0 && window[symb].current < price)
+        if (window[symb].step > 0 && window[symb].current < price){
           window[symb].step = window[symb].step - 1;
+        }
+        AddLog("Sell " + symb + "\t" + " price up " + price);
         return false;
       } else {
         window[symb].current = price;
@@ -824,17 +825,20 @@ function CalcSellPrice(symb, price) {
         if (window[symb].step >= CountPrice) {
           if (window[symb].order == false) {
             window[symb].order = true;
+            AddLog("Sell " + symb + "\t" + " " + current);
             return true;
           } else {
+            AddLog("Sell " + symb + "\t" + " ordered ");
             return false;
           }
         } else {
+          AddLog("Sell " + symb + "\t" + " count " + window[symb].step);
           return false;
         }
       }
     }
-    return false;
   } else {
+    AddLog("Sell " + symb + "\t" + " percent check fail ");
     return false;
   }
 }
@@ -848,12 +852,14 @@ function CalcBuyPrice(symb, price) {
         step: 0,
         order: false
       };
+      AddLog("Buy " + symb + "\t" + " init check " + price);
       return false;
     } else {
       if (window[symb].current >= price) {
         window[symb].current = price;
         if (window[symb].step > 0 && window[symb].current > price)
           window[symb].step = window[symb].step - 1;
+        AddLog("Buy " + symb + "\t" + " price down " + price);
         return false;
       } else {
         window[symb].current = price;
@@ -861,11 +867,14 @@ function CalcBuyPrice(symb, price) {
         if (window[symb].step >= CountPrice && window[symb].first > window[symb].current) {
           if (window[symb].order == false) {
             window[symb].order = true;
+            AddLog("Buy " + symb + "\t" + price);
             return true;
           } else {
+            AddLog("Buy " + symb + "\t" + " ordered");
             return false;
           }
         } else {
+          AddLog("Buy " + symb + "\t" + window[symb].step + "/" + CountPrice + " \t" + price);
           return false;
         }
       }
@@ -886,6 +895,7 @@ function CheckBuyOrdered(symb) {
 }
 
 function CheckSellPercent(symb, price) {
+  let result = 0;
   let percent = 0;
   let profit = $('#auto-prof').val();
   if(profit == "")
@@ -899,21 +909,25 @@ function CheckSellPercent(symb, price) {
         let mas = $('.trade-' + symb).attr('symb');
         mas = mas.substring(mas.length - 3, mas);
         percent = (price - price_buy) / price_buy * 100;
-        if (percent > profit)
-          return true;
+        if (percent > profit){
+          result = 1
+        }
         else{
-          if(percent <= stoplost && stoplost != "")
-            return true;
-          else
-            return false;
+          if(percent <= stoplost && stoplost != ""){
+            result = 1
+          }
+          else{
+            result = 0
+          }
         }
       }
     });
   } else {
     AddLog(symb + " not in trade list");
     console.log("Not in trade list");
-    return true;
+    result = 1;
   }
+  return result;
 }
 
 function SearchCoin(Key) {
