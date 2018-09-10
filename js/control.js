@@ -253,7 +253,6 @@ function GetBuySellAll() {
       method: 'GET'
     }, function (err, res, body) {
       if (err) {
-        AddLog(err);
         console.log(err);
       } else {
         try {
@@ -539,8 +538,8 @@ function DeleteTradeRow(result, id) {
 
 function SellTrade(answer, symb, price) {
   if (answer == 0) {
-    let amount = GetSellAmountAvail(symb);
-    PlaceLimitOrder(symb, amount, price, "sell");
+    let sellamount = GetSellAmountAvail(symb);
+    PlaceLimitOrder(symb, sellamount, price, "sell");
   }
 }
 
@@ -762,10 +761,10 @@ function GetSellAmountAvail(symb) {
   let AutoAmount = $('.auto-' + symb).attr('amount');
   let AvailAmount = $('#Amount-' + alt).text();
   if (AvailAmount == "") {
-    return 0;
+    AutoAmount = 0;
   } else {
     if (AvailAmount <= AutoAmount * 10 / 100) {
-      return 0;
+      AutoAmount = 0;
     } else {
       if (AutoAmount > AvailAmount) {
         AutoAmount = AvailAmount;

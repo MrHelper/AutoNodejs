@@ -122,15 +122,17 @@ function CalcAmount(symb, amount, price) {
 }
 
 function PlaceLimitOrder(Symb, Amount, Price, Side) {
-  let Amo = CalcAmount(Symb,Amount,Price);
-  if (Side == "buy") {
-    AddLog("Buy " + Symb +"\t "+ Amo + " - " + Price);
-    console.log("Buy " + Symb + " A:" + Amo + "/ P:" + Price)
-    binance.buy(Symb, Amo, Price);
-  } else {
-    AddLog("Sell " + Symb +"\t "+ Amo + " - " + Price);
-    console.log("Sell " + Symb + " A:" + Amo + "/ P:" + Price)
-    binance.sell(Symb, Amo, Price);
+  if(Amount != 0 ){
+    let Amo = CalcAmount(Symb,Amount,Price);
+    if (Side == "buy") {
+      AddLog("Buy " + Symb +"\t "+ Amo + " - " + Price);
+      console.log("Buy " + Symb + " A:" + Amo + "/ P:" + Price)
+      binance.buy(Symb, Amo, Price);
+    } else {
+      AddLog("Sell " + Symb +"\t "+ Amo + " - " + Price);
+      console.log("Sell " + Symb + " A:" + Amo + "/ P:" + Price)
+      binance.sell(Symb, Amo, Price);
+    }
   }
 }
 
